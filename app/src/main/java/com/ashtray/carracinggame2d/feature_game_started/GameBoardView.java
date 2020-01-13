@@ -33,15 +33,7 @@ public class GameBoardView extends View {
 
     private final SensorEventListener mSensorListener = new SensorEventListener() {
         public void onSensorChanged(SensorEvent se) {
-            float x = se.values[0];
-            int intX = (int) x;
-            if (intX <= -1) {
-                gameComponentManager.moveCarToRight();
-            } else if (intX > 0) {
-                gameComponentManager.moveCarToLeft();
-            } else {
-                gameComponentManager.moveCarToCenter();
-            }
+            gameComponentManager.moveCarTo(se.values[0]);
 
         }
 
