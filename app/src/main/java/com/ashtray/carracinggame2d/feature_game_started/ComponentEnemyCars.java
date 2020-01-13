@@ -15,7 +15,7 @@ import java.util.Random;
 public class ComponentEnemyCars implements GameComponent {
 
     private static final int maxSpeed = 10;
-    private int minDisBetweenTwoEnemyCar = Car.carHeight * 3;
+    private int minDisBetweenTwoEnemyCar = Car.carHeight * 4;
     private ArrayList<Car> enemyCars;
     private int speed;
     private OnCarPositionChanged onCarPositionChanged;
@@ -81,12 +81,12 @@ public class ComponentEnemyCars implements GameComponent {
         Random random = new Random();
         int totalRoadLean = DatabaseManager.getInstance().getSelectedRoadLean();
         int[] carX = new int[totalRoadLean];
-        int carY = 0 - Car.carHeight - 5; //initial car position is fixed
+        int carY = 0 - Car.carHeight - 70; //initial car position is fixed
 
         int roadWidth = ComponentRoad.perRoadLeanWidth * totalRoadLean;
         int roadX = (GameScreenInfo.getInstance().getScreenWidth() - roadWidth) / 2;
 
-        carX[0] = roadX + (ComponentRoad.perRoadLeanWidth / 2) - (Car.carWidth / 2);
+        carX[0] = roadX+4 ;
         for (int i = 1; i < totalRoadLean; i++) {
             carX[i] = carX[i - 1] + ComponentRoad.perRoadLeanWidth;
         }

@@ -13,7 +13,7 @@ import com.ashtray.carracinggame2d.log.LogHandler;
 
 public class ComponentRoad implements GameComponent {
 
-    final static int perRoadLeanWidth = 200;
+    final static int perRoadLeanWidth = (int) (GameScreenInfo.getInstance().getScreenWidth()/5);
 
     private int total_road_lean;
     private int road_width, road_height;

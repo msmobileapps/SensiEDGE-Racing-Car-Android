@@ -94,7 +94,7 @@ public class DatabaseManager {
         try { number = (String) mySharedPreferenceSupport.get(KEY_FOR_SELECTED_ROAD_LEAN); }
         catch (IOException e) { e.printStackTrace(); }
         catch (ClassNotFoundException e) { e.printStackTrace(); }
-        return (number == null)? 3 : Integer.parseInt(number); // default selected road lean is 3
+        return 3; // default selected road lean is 3
     }
 
     public void setGameSoundStatus(boolean soundStatus){

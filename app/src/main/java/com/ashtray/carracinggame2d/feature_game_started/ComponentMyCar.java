@@ -53,4 +53,9 @@ public class ComponentMyCar implements GameComponent {
     void moveCarToRight(){
         myCar.setxPosition(carX[2]);
     }
+
+    public void moveCarTo(float x) {
+        int position = (int) (ComponentRoad.perRoadLeanWidth*2 - x * (ComponentRoad.perRoadLeanWidth / 4));
+        myCar.setxPosition(position);
+    }
 }

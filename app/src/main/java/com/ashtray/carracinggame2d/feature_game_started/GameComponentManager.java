@@ -81,4 +81,8 @@ class GameComponentManager implements OnCarPositionChanged {
             }
         }
     }
+
+    public void moveCarTo(float x) {
+        ((ComponentMyCar) componentArrayList.get(GC_POS_MY_CAR)).moveCarTo(x);
+    }
 }

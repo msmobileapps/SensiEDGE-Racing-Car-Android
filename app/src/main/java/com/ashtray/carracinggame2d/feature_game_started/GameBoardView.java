@@ -14,7 +14,7 @@ import android.view.View;
 import com.ashtray.carracinggame2d.CarGame2DApplication;
 import com.ashtray.carracinggame2d.helpers.GameScreenInfo;
 
-public class GameBoardView extends View{
+public class GameBoardView extends View {
     private static final String DEBUG_TAG = "GameBoardView";
 
     private GameComponentManager gameComponentManager;
@@ -23,6 +23,7 @@ public class GameBoardView extends View{
     private float mAccel; // acceleration apart from gravity
     private float mAccelCurrent; // current acceleration including gravity
     private float mAccelLast; // last acceleration including gravity
+
     public GameBoardView(Context context) {
         super(context);
         gameComponentManager = new GameComponentManager();
@@ -32,24 +33,17 @@ public class GameBoardView extends View{
 
 //        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
     }
+
     private final SensorEventListener mSensorListener = new SensorEventListener() {
         public void onSensorChanged(SensorEvent se) {
-            float x = se.values[0];
-            int intX = (int) x;
-            if (intX<=-1){
-                gameComponentManager.moveCarToRight();
-            }else if (intX>0){
-                gameComponentManager.moveCarToLeft();
-            }else {
-                gameComponentManager.moveCarToCenter();
-            }
-
+            gameComponentManager.moveCarTo(se.values[0]);
         }
 
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
         }
     };
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -63,7 +57,7 @@ public class GameBoardView extends View{
         handler.postDelayed(this::drawAgain, 10);
     }
 
-    private void drawAgain(){
+    private void drawAgain() {
         //LogHandler.d(DEBUG_TAG, "drawing again");
         invalidate();
     }

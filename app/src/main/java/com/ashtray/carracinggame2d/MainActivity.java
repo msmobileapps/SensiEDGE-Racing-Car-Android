@@ -4,22 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
@@ -42,12 +32,14 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
     private int[] sourceLocation;
     private ObjectAnimator mAnimationSet;
     private TranslateAnimation mAnimation;
+    private float ff =1000f;
+    private int distance;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        distance = getResources().getDimensionPixelSize(R.dimen.distance);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -67,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         mImageView = findViewById(R.id.road);
-        animateCoke();
+        animateRoad();
     }
 
     @Override
@@ -125,13 +117,14 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
         LogHandler.d(DEBUG_TAG, "showing fragment done!");
     }
 
-    public void animateCoke() {
+    public void animateRoad() {
         mAnimation = new TranslateAnimation(
                 TranslateAnimation.ABSOLUTE, 0f,
                 TranslateAnimation.ABSOLUTE, 0f,
-                TranslateAnimation.RELATIVE_TO_PARENT, 0f,
-                TranslateAnimation.RELATIVE_TO_PARENT, 1.0f);
-        mAnimation.setDuration(1000);
+                TranslateAnimation.ABSOLUTE, 0f,
+                TranslateAnimation.ABSOLUTE, distance);
+        Log.e("barak","ff:"+ff);
+        mAnimation.setDuration(700);
         mAnimation.setRepeatCount(-1);
         mAnimation.setInterpolator(new LinearInterpolator());
         mImageView.setAnimation(mAnimation);
