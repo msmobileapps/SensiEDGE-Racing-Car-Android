@@ -1,8 +1,15 @@
 package com.ashtray.carracinggame2d.feature_game_started;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+
+import com.ashtray.carracinggame2d.CarGame2DApplication;
 
 public class Car {
 
@@ -14,6 +21,7 @@ public class Car {
     private int yPosition;
     private int carLean;
     private CRect rect;
+    private int[] sourceLocation;
 
     Car(int xPosition, int yPosition, int carLean, Bitmap carImage) {
         this.xPosition = xPosition;
@@ -61,4 +69,10 @@ public class Car {
     public Bitmap getCarImage() {
         return carImage;
     }
+
+    public void animateBoom() {
+        carImage = CarGame2DApplication.getInstance().getSelectedCarBoom();
+    }
+
+
 }

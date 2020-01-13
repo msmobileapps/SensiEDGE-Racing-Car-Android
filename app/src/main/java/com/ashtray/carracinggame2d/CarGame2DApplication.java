@@ -41,6 +41,10 @@ public class CarGame2DApplication extends Application {
         return getCarAccordingToNumber(DatabaseManager.getInstance().getSelectedCarNumber());
     }
 
+    public Bitmap getSelectedCarBoom() {
+        return BitmapFactory.decodeResource(getResources(), R.drawable.white);
+    }
+
     public Bitmap getCarAccordingToNumber(int number) {
         switch (number / 2) {
             case 1:
