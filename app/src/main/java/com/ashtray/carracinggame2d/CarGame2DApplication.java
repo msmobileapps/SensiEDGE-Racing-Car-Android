@@ -42,11 +42,11 @@ public class CarGame2DApplication extends Application {
     }
 
     public Bitmap getSelectedCarBoom() {
-        return BitmapFactory.decodeResource(getResources(), R.drawable.white);
+        return BitmapFactory.decodeResource(getResources(), R.drawable.car11);
     }
 
     public Bitmap getCarAccordingToNumber(int number) {
-        switch (number / 2) {
+        switch (number) {
             case 1:
                 return BitmapFactory.decodeResource(getResources(), R.drawable.car1);
             case 2:
