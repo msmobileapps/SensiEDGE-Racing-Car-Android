@@ -15,7 +15,7 @@ public class ComponentMyCar implements GameComponent {
 
     @Override
     public void initializeGameComponent() {
-        int totalRoadLean = DatabaseManager.getInstance().getSelectedRoadLean();
+        int totalRoadLean = 3;
         int roadWidth = ComponentRoad.perRoadLeanWidth * totalRoadLean;
         carX = new int[totalRoadLean];
 
@@ -40,16 +40,13 @@ public class ComponentMyCar implements GameComponent {
     }
 
     void moveCarToLeft(){
-        if(myCar.getCarLean() != 0){
-            myCar.setCarLean(myCar.getCarLean()-1);
-            myCar.setxPosition(carX[myCar.getCarLean()]);
-        }
+        myCar.setxPosition(carX[0]);
+    }
+    void moveCarToCenter(){
+        myCar.setxPosition(carX[1]);
     }
 
     void moveCarToRight(){
-        if(myCar.getCarLean() != carX.length-1){
-            myCar.setCarLean(myCar.getCarLean()+1);
-            myCar.setxPosition(carX[myCar.getCarLean()]);
-        }
+        myCar.setxPosition(carX[2]);
     }
 }

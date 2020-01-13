@@ -16,7 +16,7 @@ class Car{
 
     Car(int xPosition, int yPosition, int carLean, Bitmap carImage){
         this.xPosition = xPosition;
-        this.yPosition = yPosition;
+        this.yPosition = yPosition-100;
         this.carLean = carLean;
         this.carImage = carImage;
     }

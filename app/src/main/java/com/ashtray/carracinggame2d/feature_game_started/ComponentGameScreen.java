@@ -13,10 +13,10 @@ public class ComponentGameScreen implements GameComponent {
 
     @Override
     public void drawComponent(Canvas canvas){
-        Paint painter = new Paint();
-        painter.setStyle(Paint.Style.FILL);
-        painter.setColor(Color.WHITE);
-        canvas.drawPaint(painter);
+//        Paint painter = new Paint();
+//        painter.setStyle(Paint.Style.FILL);
+//        painter.setColor(Color.WHITE);
+//        canvas.drawPaint(painter);
     }
 
     @Override

@@ -42,6 +42,10 @@ class GameComponentManager {
         ((ComponentMyCar) componentArrayList.get(GC_POS_MY_CAR)).moveCarToLeft();
     }
 
+    void moveCarToCenter(){
+        ((ComponentMyCar) componentArrayList.get(GC_POS_MY_CAR)).moveCarToCenter();
+    }
+
     void moveCarToRight(){
         ((ComponentMyCar) componentArrayList.get(GC_POS_MY_CAR)).moveCarToRight();
     }

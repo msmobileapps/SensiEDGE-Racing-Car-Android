@@ -13,7 +13,7 @@ import com.ashtray.carracinggame2d.log.LogHandler;
 
 public class ComponentRoad implements GameComponent {
 
-    final static int perRoadLeanWidth = 200;
+    final static int perRoadLeanWidth = 130;
 
     private int total_road_lean;
     private int road_width, road_height;
@@ -47,10 +47,10 @@ public class ComponentRoad implements GameComponent {
 
     @Override
     public void drawComponent(Canvas canvas) {
-
-        Drawable d = CarGame2DApplication.getInstance().getResources().getDrawable(R.drawable.road, null);
-        d.setBounds(road_x, road_y, road_x+road_width, road_y+road_height);
-        d.draw(canvas);
+//
+//        Drawable d = CarGame2DApplication.getInstance().getResources().getDrawable(R.drawable.road, null);
+//        d.setBounds(road_x, road_y, road_x+road_width, road_y+road_height);
+//        d.draw(canvas);
     }
 
 
