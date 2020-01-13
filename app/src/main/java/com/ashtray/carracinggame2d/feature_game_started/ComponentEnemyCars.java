@@ -72,7 +72,7 @@ public class ComponentEnemyCars implements GameComponent {
         }
 
         int randomLean = random.nextInt(totalRoadLean);
-        int randomCarNumber = random.nextInt(12) + 1; // +1 is for ignoring 0
+        int randomCarNumber = random.nextInt(7) + 1; // +1 is for ignoring 0
         return new Car(carX[randomLean], carY, randomLean, CarGame2DApplication.getInstance().getCarAccordingToNumber(randomCarNumber));
     }
 }

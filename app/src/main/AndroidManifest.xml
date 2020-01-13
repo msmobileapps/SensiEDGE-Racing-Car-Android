@@ -14,7 +14,7 @@
         android:icon="@drawable/icon_check"
         android:roundIcon="@drawable/icon_check"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
+        android:theme="@style/MyTheme"
         android:versionCode="1"
         android:versionName="1.0"
         tools:ignore="GoogleAppIndexingWarning">

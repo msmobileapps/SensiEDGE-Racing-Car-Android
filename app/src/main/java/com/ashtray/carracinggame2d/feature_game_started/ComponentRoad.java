@@ -3,7 +3,10 @@ package com.ashtray.carracinggame2d.feature_game_started;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 
+import com.ashtray.carracinggame2d.CarGame2DApplication;
+import com.ashtray.carracinggame2d.R;
 import com.ashtray.carracinggame2d.database.DatabaseManager;
 import com.ashtray.carracinggame2d.helpers.GameScreenInfo;
 import com.ashtray.carracinggame2d.log.LogHandler;
@@ -44,33 +47,12 @@ public class ComponentRoad implements GameComponent {
 
     @Override
     public void drawComponent(Canvas canvas) {
-        Paint paint = new Paint();
-        paint.setStyle(Paint.Style.FILL);
 
-        drawWholeRoadBackground(canvas, paint);
-        drawBoundariesOfTheRoad(canvas, paint);
-        drawRoadDivider(canvas, paint);
+        Drawable d = CarGame2DApplication.getInstance().getResources().getDrawable(R.drawable.road, null);
+        d.setBounds(road_x, road_y, road_x+road_width, road_y+road_height);
+        d.draw(canvas);
     }
 
-    private void drawRoadDivider(Canvas canvas, Paint paint) {
-        paint.setColor(Color.YELLOW);
-        for(int i=1;i<total_road_lean;i++){
-            int roadDividerX = road_x + (road_width/total_road_lean)*i + (road_divider_width/2);
-            int roadDividerY = road_y;
-            canvas.drawRect(roadDividerX,roadDividerY, roadDividerX+road_divider_width, road_divider_height, paint);
-        }
-    }
-
-    private void drawBoundariesOfTheRoad(Canvas canvas, Paint paint) {
-        paint.setColor(Color.YELLOW);
-        canvas.drawRect(left_road_boundary_x, left_road_boundary_y, left_road_boundary_x + road_boundary_width, road_boundary_height, paint);
-        canvas.drawRect(right_road_boundary_x, right_road_boundary_y, right_road_boundary_x + road_boundary_width, road_boundary_height, paint);
-    }
-
-    private void drawWholeRoadBackground(Canvas canvas, Paint paint) {
-        paint.setColor(Color.RED);
-        canvas.drawRect(road_x, road_y, road_x+road_width, road_y+road_height, paint);
-    }
 
     @Override
     public void selfUpdatePosition() {
