@@ -1,10 +1,13 @@
 package com.ashtray.carracinggame2d.feature_game_started;
 
 import android.graphics.Canvas;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.ashtray.carracinggame2d.CarGame2DApplication;
 import com.ashtray.carracinggame2d.database.DatabaseManager;
 import com.ashtray.carracinggame2d.helpers.GameScreenInfo;
+import com.ashtray.carracinggame2d.interfaces.OnCarPositionChanged;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -15,6 +18,12 @@ public class ComponentEnemyCars implements GameComponent {
     private int minDisBetweenTwoEnemyCar = Car.carHeight * 3;
     private ArrayList<Car> enemyCars;
     private int speed;
+    private OnCarPositionChanged onCarPositionChanged;
+
+    public ComponentEnemyCars(OnCarPositionChanged listener) {
+        this.onCarPositionChanged = listener;
+    }
+
 
     @Override
     public void initializeGameComponent() {
@@ -24,40 +33,51 @@ public class ComponentEnemyCars implements GameComponent {
 
     @Override
     public void drawComponent(Canvas canvas) {
-        for(int i=0;i<enemyCars.size();i++){
+        for (int i = 0; i < enemyCars.size(); i++) {
             enemyCars.get(i).drawCar(canvas);
         }
     }
 
+
     @Override
     public void selfUpdatePosition() {
 
-        for(int i=0;i<enemyCars.size();i++){
+        for (int i = 0; i < enemyCars.size(); i++) {
             int previousyPosition = enemyCars.get(i).getyPosition();
-            enemyCars.get(i).setyPosition(previousyPosition + speed);
+
+            Car eCar = enemyCars.get(i);
+            eCar.setyPosition(previousyPosition + speed);
+
+            if (onCarPositionChanged != null) {
+                onCarPositionChanged.enemyCarPositionChanged(eCar);
+            }
         }
 
         //removing enemy cars which one is out of screen
         ArrayList<Car> temp = new ArrayList<>();
-        for(int i=0;i<enemyCars.size();i++){
+        for (int i = 0; i < enemyCars.size(); i++) {
             int currentyPosition = enemyCars.get(i).getyPosition();
-            if(currentyPosition < GameScreenInfo.getInstance().getScreenHeight()+10){
+            if (currentyPosition < GameScreenInfo.getInstance().getScreenHeight() + 10) {
                 temp.add(enemyCars.get(i));
             }
         }
         enemyCars = temp;
 
         //creating new enemy car randomly
-        if(enemyCars.size() ==0 || enemyCars.get(enemyCars.size()-1).getyPosition() > minDisBetweenTwoEnemyCar){
-            enemyCars.add(chooseARandomCar());
-            minDisBetweenTwoEnemyCar = Math.max(minDisBetweenTwoEnemyCar - 5, Car.carHeight * 2);
-            if(minDisBetweenTwoEnemyCar == Car.carHeight * 2){
-                speed = Math.min(speed+1, maxSpeed);
+        if (enemyCars.size() == 0 || enemyCars.get(enemyCars.size() - 1).getyPosition() > minDisBetweenTwoEnemyCar) {
+            Car eCar = chooseARandomCar();
+            enemyCars.add(eCar);
+            minDisBetweenTwoEnemyCar = Math.max(minDisBetweenTwoEnemyCar - 5, Car.carHeight * 4);
+            if (minDisBetweenTwoEnemyCar == Car.carHeight * 2) {
+                speed = Math.min(speed + 1, maxSpeed);
             }
+
         }
     }
 
-    private Car chooseARandomCar(){
+
+
+    private Car chooseARandomCar() {
         Random random = new Random();
         int totalRoadLean = DatabaseManager.getInstance().getSelectedRoadLean();
         int[] carX = new int[totalRoadLean];
@@ -67,8 +87,8 @@ public class ComponentEnemyCars implements GameComponent {
         int roadX = (GameScreenInfo.getInstance().getScreenWidth() - roadWidth) / 2;
 
         carX[0] = roadX + (ComponentRoad.perRoadLeanWidth / 2) - (Car.carWidth / 2);
-        for(int i=1;i<totalRoadLean;i++){
-            carX[i] = carX[i-1] + ComponentRoad.perRoadLeanWidth;
+        for (int i = 1; i < totalRoadLean; i++) {
+            carX[i] = carX[i - 1] + ComponentRoad.perRoadLeanWidth;
         }
 
         int randomLean = random.nextInt(totalRoadLean);
