@@ -39,6 +39,10 @@ public class ComponentMyCar implements GameComponent {
         //no self update for this
     }
 
+    public Car getMyCar(){
+        return myCar;
+    }
+
     void moveCarToLeft(){
         myCar.setxPosition(carX[0]);
     }
