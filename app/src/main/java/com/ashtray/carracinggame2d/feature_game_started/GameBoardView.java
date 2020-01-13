@@ -1,6 +1,5 @@
 package com.ashtray.carracinggame2d.feature_game_started;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.hardware.Sensor;
@@ -8,11 +7,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Handler;
-import android.view.MotionEvent;
 import android.view.View;
 
 import com.ashtray.carracinggame2d.CarGame2DApplication;
-import com.ashtray.carracinggame2d.helpers.GameScreenInfo;
 
 public class GameBoardView extends View {
     private static final String DEBUG_TAG = "GameBoardView";
@@ -31,12 +28,21 @@ public class GameBoardView extends View {
         mSensorManager = (SensorManager) CarGame2DApplication.getInstance().getSystemService(Context.SENSOR_SERVICE);
         mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 
-//        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+
     }
 
     private final SensorEventListener mSensorListener = new SensorEventListener() {
         public void onSensorChanged(SensorEvent se) {
-            gameComponentManager.moveCarTo(se.values[0]);
+            float x = se.values[0];
+            int intX = (int) x;
+            if (intX <= -1) {
+                gameComponentManager.moveCarToRight();
+            } else if (intX > 0) {
+                gameComponentManager.moveCarToLeft();
+            } else {
+                gameComponentManager.moveCarToCenter();
+            }
+
         }
 
         @Override

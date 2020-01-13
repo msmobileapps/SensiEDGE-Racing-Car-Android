@@ -18,6 +18,7 @@ class GameComponentManager implements OnCarPositionChanged {
 
     private ArrayList<GameComponent> componentArrayList;
     private Car myCar;
+    private Car enemyHitedCar;
 
     GameComponentManager() {
         componentArrayList = new ArrayList<>();
@@ -61,11 +62,11 @@ class GameComponentManager implements OnCarPositionChanged {
         ((ComponentMyCar) componentArrayList.get(GC_POS_MY_CAR)).moveCarToLeft();
     }
 
-    void moveCarToCenter(){
+    void moveCarToCenter() {
         ((ComponentMyCar) componentArrayList.get(GC_POS_MY_CAR)).moveCarToCenter();
     }
 
-    void moveCarToRight(){
+    void moveCarToRight() {
         ((ComponentMyCar) componentArrayList.get(GC_POS_MY_CAR)).moveCarToRight();
     }
 
@@ -74,12 +75,33 @@ class GameComponentManager implements OnCarPositionChanged {
     public void enemyCarPositionChanged(Car enemyCar) {
 
         if (myCar != null && enemyCar != null) {
-            if (myCar.getRect().x == enemyCar.getRect().x) {
-                if (((myCar.getRect().y - myCar.carHeight) <= (enemyCar.getRect().y + enemyCar.carHeight)) || myCar.getRect().intersects(enemyCar.getRect())) {
-                    Log.d("IgorBoom", "Boom!!!!!");
+
+            if (enemyHitedCar != null && enemyHitedCar != enemyCar) {
+                if (isCarCrash(enemyCar)) {
+                    Log.d("IgorBoomTest", " Boom");
+                }
+            } else if (enemyHitedCar == null) {
+                if (isCarCrash(enemyCar)) {
+                    Log.d("IgorBoomTest", "First Time Boom");
                 }
             }
+
+
         }
+
+
+    }
+
+
+    private boolean isCarCrash(Car enemyCar) {
+        if (myCar.getRect().x == enemyCar.getRect().x) {
+            if (((myCar.getRect().y - myCar.carHeight) <= (enemyCar.getRect().y + enemyCar.carHeight)) || myCar.getRect().intersects(enemyCar.getRect())) {
+                enemyHitedCar = enemyCar;
+                return true;
+
+            }
+        }
+        return false;
     }
 
     public void moveCarTo(float x) {

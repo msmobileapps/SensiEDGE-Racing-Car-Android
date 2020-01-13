@@ -26,7 +26,7 @@ public class ComponentMyCar implements GameComponent {
         }
 
         int currentLen = 1;
-        myCar = new Car(carX[currentLen], carY, currentLen, CarGame2DApplication.getInstance().getSelectedCarImage());
+        myCar = new Car(carX[currentLen], (carY - 150) , currentLen, CarGame2DApplication.getInstance().getSelectedCarImage());
     }
 
     @Override
