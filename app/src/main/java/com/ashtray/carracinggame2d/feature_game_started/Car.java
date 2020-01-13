@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-public class Car{
+public class Car {
 
     static final int carWidth = 50;
     static final int carHeight = 100;
@@ -15,14 +15,14 @@ public class Car{
     private int carLean;
     private CRect rect;
 
-    Car(int xPosition, int yPosition, int carLean, Bitmap carImage){
+    Car(int xPosition, int yPosition, int carLean, Bitmap carImage) {
         this.xPosition = xPosition;
-        this.yPosition = yPosition-100;
+        this.yPosition = yPosition;
         this.carLean = carLean;
         this.carImage = carImage;
     }
 
-    void drawCar(Canvas canvas){
+    void drawCar(Canvas canvas) {
         canvas.drawBitmap(carImage, xPosition, yPosition, new Paint());
 
     }
@@ -30,7 +30,6 @@ public class Car{
     int getxPosition() {
         return xPosition;
     }
-
 
 
     int getyPosition() {
@@ -59,7 +58,7 @@ public class Car{
         this.carLean = carLean;
     }
 
-    public Bitmap getCarImage(){
+    public Bitmap getCarImage() {
         return carImage;
     }
 }
