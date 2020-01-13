@@ -14,7 +14,7 @@ import com.ashtray.carracinggame2d.feature_game_home.GameHomeFragment;
 import com.ashtray.carracinggame2d.feature_game_settings.GameSettingsFragment;
 import com.ashtray.carracinggame2d.feature_game_started.GameStartedFragment;
 import com.ashtray.carracinggame2d.log.LogHandler;
-import com.google.android.gms.ads.AdRequest;
+
 
 
 public class MainActivity extends AppCompatActivity implements MyFragment.MyFragmentCallBacks {
@@ -38,9 +38,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
     protected void onPause() {
         super.onPause();
         LogHandler.d(DEBUG_TAG, "on pause called");
-
-        //since app is in pause state so close ads but in different thread so that user don't see anything
-        new Handler().postDelayed(this::closeAds, 1000);
+        
     }
 
     @Override
@@ -48,28 +46,9 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
         super.onResume();
         LogHandler.d(DEBUG_TAG, "on resume called");
 
-        //Initialize mobile ads after 1 second
-        new Handler().postDelayed(this::loadAds, 100);
     }
 
-    public void loadAds(){
-        new Handler(Looper.getMainLooper()).post(() -> {
-            if(!CarGame2DApplication.getInstance().isInternetAvailable()){
-                LogHandler.d(DEBUG_TAG, "Internet is not available so no need to show ads.[return]");
-                return;
-            }
 
-
-            LogHandler.d(DEBUG_TAG, "loading banner ads");
-            AdRequest adRequest = new AdRequest.Builder().addTestDevice("F8E6FE3BFDB10141A96AE737E9E9DBF1").build();
-            //AdRequest adRequest = new AdRequest.Builder().build();;
-        });
-    }
-
-    private void closeAds(){
-        LogHandler.d(DEBUG_TAG, "closing ads");
-
-    }
 
     @Override
     public void onBackPressed() {
