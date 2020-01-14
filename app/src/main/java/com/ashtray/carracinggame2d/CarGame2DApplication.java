@@ -42,7 +42,7 @@ public class CarGame2DApplication extends Application {
     }
 
     public Bitmap getSelectedCarBoom() {
-        return BitmapFactory.decodeResource(getResources(), R.drawable.car11);
+        return BitmapFactory.decodeResource(getResources(), R.drawable.car_boom);
     }
 
     public Bitmap getCarAccordingToNumber(int number) {

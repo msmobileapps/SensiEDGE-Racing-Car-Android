@@ -79,10 +79,12 @@ class GameComponentManager implements OnCarPositionChanged {
             if (enemyHitedCar != null && enemyHitedCar != enemyCar) {
                 if (isCarCrash(enemyCar)) {
                     Log.d("IgorBoomTest", " Boom");
+                    myCar.animateBoom();
                 }
             } else if (enemyHitedCar == null) {
                 if (isCarCrash(enemyCar)) {
                     Log.d("IgorBoomTest", "First Time Boom");
+                    myCar.animateBoom();
                 }
             }
 
