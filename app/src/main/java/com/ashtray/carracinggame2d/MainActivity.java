@@ -1,5 +1,6 @@
 package com.ashtray.carracinggame2d;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -22,12 +23,14 @@ import com.ashtray.carracinggame2d.feature_game_started.GameStartedFragment;
 import com.ashtray.carracinggame2d.interfaces.CarDataListener;
 import com.ashtray.carracinggame2d.log.LogHandler;
 
+import static com.ashtray.carracinggame2d.entities.MyFragment.MyFragmentNames.GAME_HOME_FRAGMENT;
+
 
 public class MainActivity extends AppCompatActivity implements MyFragment.MyFragmentCallBacks, CarDataListener {
     private static final String DEBUG_TAG = "[MainActivity]";
     private static final float DELTA = -100f;
     private static int ANIMATION_DURATION = 1000;
-    private static final int GAME_LIVES = 3;
+    public static final int GAME_LIVES = 3;
 
     private MyFragment currentShowingFragmentObject;
     private ImageView mImageView;
@@ -35,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
     private int distance;
     private TextView score_tv;
     private LinearLayout cars_container;
+    private Handler accelerateHandler;
+    private Runnable accelerateRunnble;
 
 
     @Override
@@ -44,12 +49,12 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
 
 
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        viewInit();
         showFragment(MyFragment.MyFragmentNames.GAME_STARTED_FRAGMENT);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -61,17 +66,13 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        viewInit();
-        animateRoad();
 
-        viewInit();
-
-        addCars();
 
     }
 
     private void addCars() {
-        if(cars_container != null){
+        if (cars_container != null) {
+            cars_container.removeAllViews();
             for (int i = 0; i < GAME_LIVES; i++) {
                 ImageView imageView = new ImageView(this);
                 imageView.setImageResource(R.drawable.car5);
@@ -95,6 +96,8 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
         LogHandler.d(DEBUG_TAG, "on pause called");
 
     }
+
+
 
     @Override
     protected void onResume() {
@@ -130,6 +133,8 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
                 break;
             case GAME_STARTED_FRAGMENT:
                 currentShowingFragmentObject = new GameStartedFragment(this, this);
+                addCars();
+                animateRoad();
                 break;
             case GAME_SETTINGS_FRAGMENT:
                 currentShowingFragmentObject = new GameSettingsFragment(this);
@@ -155,40 +160,70 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
         mAnimation.setRepeatCount(-1);
         mAnimation.setInterpolator(new LinearInterpolator());
         mImageView.setAnimation(mAnimation);
-        accelarete();
+        accelarete(false);
 
     }
 
-    private void accelarete(){
-        final int[] counter = {0};
-       Handler handler =  new Handler();
+    private void accelarete(boolean stop) {
 
 
-        final Runnable runnable = new Runnable() {
-            public void run() {
+        if (!stop) {
+            accelerateHandler = new Handler();
+            final int[] counter = {0};
 
-                   ANIMATION_DURATION -= counter[0];
-                   counter[0]++;
-                   score_tv.setText(String.valueOf(counter[0]));
+            accelerateRunnble = new Runnable() {
+                public void run() {
 
-                   mAnimation.setDuration((ANIMATION_DURATION <= 0) ? 1 : ANIMATION_DURATION);
-                   handler.postDelayed(this, 1000);
+                    ANIMATION_DURATION -= counter[0];
+                    counter[0]++;
+                    score_tv.setText(String.valueOf(counter[0]));
+
+                    mAnimation.setDuration((ANIMATION_DURATION <= 0) ? 1 : ANIMATION_DURATION);
+                    accelerateHandler.postDelayed(this, 1000);
 
 
-            }
-        };
+                }
+            };
 
-        handler.post(runnable);
+            accelerateHandler.post(accelerateRunnble);
+        } else {
+            accelerateHandler.removeCallbacks(accelerateRunnble);
+        }
 
     }
 
 
     @Override
     public void carHited() {
-        if(cars_container.getChildCount() != 0) {
+        if (cars_container.getChildCount() != 0) {
             cars_container.removeViewAt(cars_container.getChildCount() - 1);
-        }else {
-            //TODO... Game Over
         }
+
+        if (cars_container.getChildCount() == 0) {
+            gameOver();
+        }
+    }
+
+
+    private void gameOver() {
+
+        addCars();
+        mAnimation.cancel();
+        accelarete(true);
+        ((GameStartedFragment)currentShowingFragmentObject).getGameBoardView().stopGame();
+        showGameOverDialog();
+    }
+
+
+    private void showGameOverDialog(){
+        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        alertDialog.setTitle("GameOver");
+        alertDialog.setMessage("Your score is " + score_tv.getText());
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                (dialog, which) -> {
+                    showFragment(GAME_HOME_FRAGMENT);
+                    dialog.dismiss();
+                });
+        alertDialog.show();
     }
 }

@@ -18,6 +18,9 @@ public class GameBoardView extends View {
     private GameComponentManager gameComponentManager;
     private Handler handler;
     private SensorManager mSensorManager;
+    int counter = 0;
+    private boolean isGameStopped;
+
 
     private float mAccel; // acceleration apart from gravity
     private float mAccelCurrent; // current acceleration including gravity
@@ -52,15 +55,25 @@ public class GameBoardView extends View {
         gameComponentManager.drawAllTheComponents(canvas);
         gameComponentManager.selfUpdateComponents();
         //long lEndTime = System.nanoTime();
-
+        counter++;
         //long output = lEndTime - lStartTime;
         //LogHandler.d("GameBoardView", "timing difference " + output);
         handler.postDelayed(this::drawAgain, 10);
+
+
+
+    }
+
+    public void stopGame(){
+        isGameStopped = true;
     }
 
     private void drawAgain() {
         //LogHandler.d(DEBUG_TAG, "drawing again");
-        invalidate();
+        if(!isGameStopped) {
+            invalidate();
+        }
+
     }
 //
 //    @SuppressLint("ClickableViewAccessibility")
