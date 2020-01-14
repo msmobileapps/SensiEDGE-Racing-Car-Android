@@ -4,44 +4,46 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.animation.ObjectAnimator;
-
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.ashtray.carracinggame2d.entities.MyFragment;
 import com.ashtray.carracinggame2d.feature_game_home.GameHomeFragment;
 import com.ashtray.carracinggame2d.feature_game_settings.GameSettingsFragment;
 import com.ashtray.carracinggame2d.feature_game_started.GameStartedFragment;
+import com.ashtray.carracinggame2d.interfaces.CarDataListener;
 import com.ashtray.carracinggame2d.log.LogHandler;
 
 
-public class MainActivity extends AppCompatActivity implements MyFragment.MyFragmentCallBacks {
+public class MainActivity extends AppCompatActivity implements MyFragment.MyFragmentCallBacks, CarDataListener {
     private static final String DEBUG_TAG = "[MainActivity]";
     private static final float DELTA = -100f;
-    private int end = 1;
-    private int start = 0;
+    private static int ANIMATION_DURATION = 1000;
+    private static final int GAME_LIVES = 3;
 
     private MyFragment currentShowingFragmentObject;
     private ImageView mImageView;
-    private int[] sourceLocation;
-    private ObjectAnimator mAnimationSet;
     private TranslateAnimation mAnimation;
-    private float ff =1000f;
     private int distance;
+    private TextView score_tv;
+    private LinearLayout cars_container;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        distance = getResources().getDimensionPixelSize(R.dimen.distance);
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+
+
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -59,8 +61,32 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        mImageView = findViewById(R.id.road);
+        viewInit();
         animateRoad();
+
+        viewInit();
+
+        addCars();
+
+    }
+
+    private void addCars() {
+        if(cars_container != null){
+            for (int i = 0; i < GAME_LIVES; i++) {
+                ImageView imageView = new ImageView(this);
+                imageView.setImageResource(R.drawable.car5);
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(60, 65);
+                cars_container.addView(imageView, lp);
+            }
+        }
+    }
+
+    private void viewInit() {
+        distance = getResources().getDimensionPixelSize(R.dimen.distance);
+        mImageView = findViewById(R.id.road);
+        score_tv = findViewById(R.id.score_tv);
+        cars_container = findViewById(R.id.cars_container);
     }
 
     @Override
@@ -103,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
                 currentShowingFragmentObject = new GameHomeFragment(this);
                 break;
             case GAME_STARTED_FRAGMENT:
-                currentShowingFragmentObject = new GameStartedFragment(this);
+                currentShowingFragmentObject = new GameStartedFragment(this, this);
                 break;
             case GAME_SETTINGS_FRAGMENT:
                 currentShowingFragmentObject = new GameSettingsFragment(this);
@@ -124,11 +150,45 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
                 TranslateAnimation.ABSOLUTE, 0f,
                 TranslateAnimation.ABSOLUTE, 0f,
                 TranslateAnimation.ABSOLUTE, distance);
-        Log.e("barak","ff:"+ff);
-        mAnimation.setDuration(700);
+
+        mAnimation.setDuration(ANIMATION_DURATION);
         mAnimation.setRepeatCount(-1);
         mAnimation.setInterpolator(new LinearInterpolator());
         mImageView.setAnimation(mAnimation);
+        accelarete();
+
     }
 
+    private void accelarete(){
+        final int[] counter = {0};
+       Handler handler =  new Handler();
+
+
+        final Runnable runnable = new Runnable() {
+            public void run() {
+
+                   ANIMATION_DURATION -= counter[0];
+                   counter[0]++;
+                   score_tv.setText(String.valueOf(counter[0]));
+
+                   mAnimation.setDuration((ANIMATION_DURATION <= 0) ? 1 : ANIMATION_DURATION);
+                   handler.postDelayed(this, 1000);
+
+
+            }
+        };
+
+        handler.post(runnable);
+
+    }
+
+
+    @Override
+    public void carHited() {
+        if(cars_container.getChildCount() != 0) {
+            cars_container.removeViewAt(cars_container.getChildCount() - 1);
+        }else {
+            //TODO... Game Over
+        }
+    }
 }

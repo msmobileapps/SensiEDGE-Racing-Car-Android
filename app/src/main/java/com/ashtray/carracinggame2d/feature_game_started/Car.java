@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Handler;
-import android.util.Log;
+
 
 import com.ashtray.carracinggame2d.CarGame2DApplication;
 

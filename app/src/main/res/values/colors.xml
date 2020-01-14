@@ -3,4 +3,6 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="game_info_background">#D83F51B5</color>
+    <color name="game_info_white_text">#FFFFFF</color>
 </resources>
