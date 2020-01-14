@@ -94,11 +94,26 @@ class GameComponentManager implements OnCarPositionChanged {
 
 
     private boolean isCarCrash(Car enemyCar) {
-        if (myCar.getRect().x == enemyCar.getRect().x) {
+        if (isCarinXRange(myCar.getRect().x, enemyCar.getRect().x)) {
             if (((myCar.getRect().y - myCar.carHeight) <= (enemyCar.getRect().y + enemyCar.carHeight)) || myCar.getRect().intersects(enemyCar.getRect())) {
                 enemyHitedCar = enemyCar;
                 return true;
 
+            }
+        }
+
+        return false;
+
+    }
+
+    private boolean isCarinXRange(int oneX, int secInt) {
+        if (oneX > secInt) {
+            if ((oneX - secInt) <= 101) {
+                return true;
+            }
+        } else {
+            if ((secInt - oneX) <= 101) {
+                return true;
             }
         }
         return false;
@@ -107,4 +122,7 @@ class GameComponentManager implements OnCarPositionChanged {
     public void moveCarTo(float x) {
         ((ComponentMyCar) componentArrayList.get(GC_POS_MY_CAR)).moveCarTo(x);
     }
+
+
 }
+
