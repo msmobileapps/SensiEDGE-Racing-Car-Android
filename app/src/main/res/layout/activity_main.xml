@@ -17,6 +17,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
 
+
         <ImageView
             android:id="@+id/road"
             android:scaleType="fitXY"
@@ -24,6 +25,9 @@
             android:layout_height="match_parent"
             android:layout_marginTop="-735dp"
             android:src="@drawable/road" />
+
+
+
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

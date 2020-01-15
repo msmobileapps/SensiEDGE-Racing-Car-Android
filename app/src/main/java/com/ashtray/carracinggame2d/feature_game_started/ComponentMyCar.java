@@ -1,8 +1,10 @@
 package com.ashtray.carracinggame2d.feature_game_started;
 
 import android.graphics.Canvas;
+import android.util.Log;
 
 import com.ashtray.carracinggame2d.CarGame2DApplication;
+import com.ashtray.carracinggame2d.LazySingleton;
 import com.ashtray.carracinggame2d.database.DatabaseManager;
 import com.ashtray.carracinggame2d.helpers.GameScreenInfo;
 
@@ -36,7 +38,10 @@ public class ComponentMyCar implements GameComponent {
 
     @Override
     public void selfUpdatePosition() {
-        //no self update for this
+        float pos = LazySingleton.Companion.getINSTANCE().position / 200.0f;
+        int position = (int) (ComponentRoad.perRoadLeanWidth*2 - pos * (ComponentRoad.perRoadLeanWidth / 4));
+        Log.e("barak",LazySingleton.Companion.getINSTANCE().position+" lazy" + "   |  pos:"+pos+ "   |  position:"+position);
+        myCar.setxPosition(position);
     }
 
     public Car getMyCar(){
@@ -55,7 +60,9 @@ public class ComponentMyCar implements GameComponent {
     }
 
     public void moveCarTo(float x) {
-        int position = (int) (ComponentRoad.perRoadLeanWidth*2 - x * (ComponentRoad.perRoadLeanWidth / 4));
-        myCar.setxPosition(position);
+//        int position = (int) (ComponentRoad.perRoadLeanWidth*2 - x * (ComponentRoad.perRoadLeanWidth / 4));
+//        myCar.setxPosition(position);
     }
+
+
 }

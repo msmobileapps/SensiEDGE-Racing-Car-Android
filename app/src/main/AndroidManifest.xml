@@ -18,12 +18,45 @@
         android:versionCode="1"
         android:versionName="1.0"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <activity
+            android:name=".bluetooth.ScanActivity"
+            android:label="@string/title_activity_scan">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".bluetooth.FeatureListActivity"
+            android:label="@string/title_activity_demo"
+            android:launchMode="singleTop"
+            android:parentActivityName=".bluetooth.ScanActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".bluetooth.ScanActivity"/>
+        </activity>
+        <activity
+            android:name=".bluetooth.DebugConsoleActivity"
+            android:label="@string/title_activity_debug_console"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".bluetooth.FeatureListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".bluetooth.FeatureListActivity"/>
+        </activity>
+        <activity
+            android:name=".bluetooth.SettingsActivity"
+            android:parentActivityName=".bluetooth.DebugConsoleActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".bluetooth.FeatureListActivity"/>
         </activity>
     </application>
 

@@ -64,7 +64,7 @@ public class GameBoardView extends View {
 //    @Override
 //    public boolean onTouchEvent(MotionEvent event) {
 //        int currentX = (int) event.getX();
-//        if((GameScreenInfo.getInstance().getScreenWidth()/2) <= currentX){
+//        if((GameScreenInfo.getINSTANCE().getScreenWidth()/2) <= currentX){
 //            gameComponentManager.moveCarToRight(intX);
 //        } else {
 //            gameComponentManager.moveCarToLeft(intX);

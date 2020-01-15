@@ -13,5 +13,12 @@
     <string name="easy">EASY</string>
     <string name="medium">MEDIUM</string>
     <string name="hard">HARD</string>
+    <string name="title_activity_scan">Device Scan</string>
+    <string name="startScanMenu">Start Scan</string>
+    <string name="StopScanMenu">Stop Scan</string>
+    <string name="title_activity_demo">Feature list</string>
 
+    <string name="openRegister">Register</string>
+    <string name="openDebugConsole">Debug Console</string>
+    <dimen name="featureTextSize">22sp</dimen>
 </resources>

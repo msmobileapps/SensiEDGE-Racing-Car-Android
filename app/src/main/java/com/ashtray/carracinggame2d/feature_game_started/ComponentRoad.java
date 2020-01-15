@@ -48,7 +48,7 @@ public class ComponentRoad implements GameComponent {
     @Override
     public void drawComponent(Canvas canvas) {
 //
-//        Drawable d = CarGame2DApplication.getInstance().getResources().getDrawable(R.drawable.road, null);
+//        Drawable d = CarGame2DApplication.getINSTANCE().getResources().getDrawable(R.drawable.road, null);
 //        d.setBounds(road_x, road_y, road_x+road_width, road_y+road_height);
 //        d.draw(canvas);
     }
