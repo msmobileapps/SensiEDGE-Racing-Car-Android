@@ -51,6 +51,9 @@ public class NodeContainerFragment extends Fragment {
                     public void run() {
                         mConnectionWait.dismiss();
                         mConnectionWait  = null;
+                        if (activity instanceof ScanActivity){
+                            ((ScanActivity)activity).goNext(node);
+                        }
                     }
                 });
             } else {

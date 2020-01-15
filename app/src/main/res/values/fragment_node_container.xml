@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="progressDialogConnTitle">Connecting..</string>
+    <string name="searchDialogConnTitle">Searching..</string>
     <string name="progressDialogConnMsg">Connecting with: %s</string>
     <string name="progressDialogConnMsgDeadNodeError">Error during the connection with the node %s
     </string>

@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.view.View;
 
 import com.ashtray.carracinggame2d.CarGame2DApplication;
+import com.ashtray.carracinggame2d.interfaces.CarDataListener;
 
 public class GameBoardView extends View {
     private static final String DEBUG_TAG = "GameBoardView";
@@ -17,16 +18,21 @@ public class GameBoardView extends View {
     private GameComponentManager gameComponentManager;
     private Handler handler;
     private SensorManager mSensorManager;
+    int counter = 0;
+    private boolean isGameStopped;
+
+
     private float mAccel; // acceleration apart from gravity
     private float mAccelCurrent; // current acceleration including gravity
     private float mAccelLast; // last acceleration including gravity
 
-    public GameBoardView(Context context) {
+    public GameBoardView(Context context, CarDataListener listener) {
         super(context);
-        gameComponentManager = new GameComponentManager();
+        gameComponentManager = new GameComponentManager(listener);
         handler = new Handler();
         mSensorManager = (SensorManager) CarGame2DApplication.getInstance().getSystemService(Context.SENSOR_SERVICE);
         mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+
 
 
     }
@@ -49,15 +55,25 @@ public class GameBoardView extends View {
         gameComponentManager.drawAllTheComponents(canvas);
         gameComponentManager.selfUpdateComponents();
         //long lEndTime = System.nanoTime();
-
+        counter++;
         //long output = lEndTime - lStartTime;
         //LogHandler.d("GameBoardView", "timing difference " + output);
         handler.postDelayed(this::drawAgain, 10);
+
+
+
+    }
+
+    public void stopGame(){
+        isGameStopped = true;
     }
 
     private void drawAgain() {
         //LogHandler.d(DEBUG_TAG, "drawing again");
-        invalidate();
+        if(!isGameStopped) {
+            invalidate();
+        }
+
     }
 //
 //    @SuppressLint("ClickableViewAccessibility")

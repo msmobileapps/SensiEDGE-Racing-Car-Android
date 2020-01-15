@@ -187,7 +187,7 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
         //noinspection SimplifiableIfStatement
         if (id == R.id.menu_showRegister) {
             mNodeContainer.keepConnectionOpen(true);
-            startActivity(SettingsActivity.getStartIntent(this, mNode));
+//            startActivity(SettingsActivity.getStartIntent(this, mNode));
             return true;
         }//else
         if (id == R.id.menu_showDebug) {

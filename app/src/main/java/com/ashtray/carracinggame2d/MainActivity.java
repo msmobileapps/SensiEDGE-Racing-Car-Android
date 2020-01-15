@@ -1,5 +1,6 @@
 package com.ashtray.carracinggame2d;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -10,12 +11,15 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.ashtray.carracinggame2d.bluetooth.FeatureListActivity;
 import com.ashtray.carracinggame2d.bluetooth.NodeContainerFragment;
@@ -23,26 +27,27 @@ import com.ashtray.carracinggame2d.entities.MyFragment;
 import com.ashtray.carracinggame2d.feature_game_home.GameHomeFragment;
 import com.ashtray.carracinggame2d.feature_game_settings.GameSettingsFragment;
 import com.ashtray.carracinggame2d.feature_game_started.GameStartedFragment;
+import com.ashtray.carracinggame2d.interfaces.CarDataListener;
 import com.ashtray.carracinggame2d.log.LogHandler;
 import com.st.BlueSTSDK.Feature;
 import com.st.BlueSTSDK.Manager;
 import com.st.BlueSTSDK.Node;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import static com.ashtray.carracinggame2d.bluetooth.FeatureListActivity.NODE_FRAGMENT;
 
 
-public class MainActivity extends AppCompatActivity implements MyFragment.MyFragmentCallBacks {
+public class MainActivity extends AppCompatActivity implements MyFragment.MyFragmentCallBacks, CarDataListener {
     private static final String DEBUG_TAG = "[MainActivity]";
     private static final float DELTA = -100f;
-    private static final int MAX_SAMPLE_SIZE = 5;
+    private static final int MAX_SAMPLE_SIZE = 7;
     private int end = 1;
     private int start = 0;
     private final static String NODE_TAG = FeatureListActivity.class.getCanonicalName() + "" +
             ".NODE_TAG";
-    ArrayList <Short> rollingAverage = new ArrayList<>();
+    ArrayList<Short> rollingAverage = new ArrayList<>();
+    private static int ANIMATION_DURATION = 1000;
+    public static final int GAME_LIVES = 3;
+
     private MyFragment currentShowingFragmentObject;
     private ImageView mImageView;
     private int[] sourceLocation;
@@ -53,6 +58,10 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
     private Feature feature;
     private Node mNode;
     private NodeContainerFragment mNodeContainer;
+    private TextView scoreTv;
+    private LinearLayout cars_container;
+    private Handler accelerateHandler;
+    private int counter;
 
     public static Intent getStartIntent(Context c, @NonNull Node node) {
         Intent i = new Intent(c, MainActivity.class);
@@ -66,18 +75,12 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
         super.onCreate(savedInstanceState);
         distance = getResources().getDimensionPixelSize(R.dimen.distance);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-        Intent i = getIntent();
-        mNodeContainer = new NodeContainerFragment();
-        mNodeContainer.setArguments(i.getExtras());
-
-        getFragmentManager().beginTransaction()
-                .add(mNodeContainer, NODE_FRAGMENT).commit();
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        viewInit();
         showFragment(MyFragment.MyFragmentNames.GAME_STARTED_FRAGMENT);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -98,9 +101,26 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
     protected void onPause() {
         super.onPause();
         LogHandler.d(DEBUG_TAG, "on pause called");
-        if (mNode != null) {
-            mNode.removeNodeStateListener(mNodeStatusListener);
+    }
+
+    private void addCars() {
+        if (cars_container != null) {
+            cars_container.removeAllViews();
+            for (int i = 0; i < GAME_LIVES; i++) {
+                ImageView imageView = new ImageView(this);
+                imageView.setImageResource(R.drawable.car5);
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(60, 65);
+                cars_container.addView(imageView, lp);
+            }
         }
+    }
+
+    private void viewInit() {
+        distance = getResources().getDimensionPixelSize(R.dimen.distance);
+        mImageView = findViewById(R.id.road);
+        scoreTv = findViewById(R.id.score_tv);
+        cars_container = findViewById(R.id.cars_container);
     }
 
     @Override
@@ -111,11 +131,13 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
             mNode = Manager.getSharedInstance().getNodeWithTag(getIntent().getStringExtra(NODE_TAG));
         }
         if (mNode != null) {
-            mNode.addNodeStateListener(mNodeStatusListener);
+            feature = mNode.getFeatures().get(2);
+            feature.addFeatureListener((f, sample) -> {
+                LazySingleton.Companion.getINSTANCE().position = averageList((Short) sample.data[0]);
+            });
+            mNode.enableNotification(feature);
         }
-
     }
-
 
     @Override
     public void onBackPressed() {
@@ -143,7 +165,9 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
                 currentShowingFragmentObject = new GameHomeFragment(this);
                 break;
             case GAME_STARTED_FRAGMENT:
-                currentShowingFragmentObject = new GameStartedFragment(this);
+                currentShowingFragmentObject = new GameStartedFragment(this, this);
+                addCars();
+                animateRoad();
                 break;
             case GAME_SETTINGS_FRAGMENT:
                 currentShowingFragmentObject = new GameSettingsFragment(this);
@@ -164,30 +188,65 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
                 TranslateAnimation.ABSOLUTE, 0f,
                 TranslateAnimation.ABSOLUTE, 0f,
                 TranslateAnimation.ABSOLUTE, distance);
-
         mAnimation.setDuration(700);
         mAnimation.setRepeatCount(-1);
         mAnimation.setInterpolator(new LinearInterpolator());
         mImageView.setAnimation(mAnimation);
+        accelarete(false);
     }
 
-    private Node.NodeStateListener mNodeStatusListener = new Node.NodeStateListener() {
-        @Override
-        public void onStateChange(final Node node, Node.State newState, Node.State prevState) {
-            if (newState == Node.State.Connected) {
-                feature = mNode.getFeatures().get(2);
-                feature.addFeatureListener((f, sample) -> {
-
-                    LazySingleton.Companion.getINSTANCE().position = averageList((Short) sample.data[0]);
-                });
-                mNode.enableNotification(feature);
-            }
+    private void accelarete(boolean stop) {
+        if (!stop) {
+            accelerateHandler = new Handler();
+            accelerateHandler.post(accelerateRunnble);
+        } else {
+            accelerateHandler.removeCallbacks(accelerateRunnble);
         }
-    };
+    }
+
+
+    @Override
+    public void carHited() {
+        if (cars_container.getChildCount() != 0) {
+            cars_container.removeViewAt(cars_container.getChildCount() - 1);
+        }
+        if (cars_container.getChildCount() == 0) {
+            gameOver();
+        }
+    }
+
+
+    private void gameOver() {
+        ANIMATION_DURATION = 1000;
+        counter = 0;
+        accelerateHandler.removeCallbacks(accelerateRunnble);
+        addCars();
+        mAnimation.cancel();
+        accelarete(true);
+        ((GameStartedFragment) currentShowingFragmentObject).getGameBoardView().stopGame();
+        showGameOverDialog();
+    }
+
+
+    private void showGameOverDialog() {
+        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        alertDialog.setTitle("Game Over");
+        alertDialog.setMessage("Your score is " + scoreTv.getText());
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "play again",
+                (dialog, which) -> {
+                    dialog.dismiss();
+                    showFragment(MyFragment.MyFragmentNames.GAME_STARTED_FRAGMENT);
+                });
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit",
+                (dialog, which) -> {
+                    finish();
+                });
+        alertDialog.show();
+    }
 
 
     public int averageList(Short tallyUp) {
-        if (rollingAverage.size() == 5) {
+        if (rollingAverage.size() == MAX_SAMPLE_SIZE) {
             rollingAverage.remove(0);
         }
         rollingAverage.add(tallyUp);
@@ -199,6 +258,13 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
 
         return total;
     }
-
-
+    private Runnable accelerateRunnble = new Runnable() {
+        public void run() {
+            ANIMATION_DURATION -= counter;
+            counter++;
+            scoreTv.setText(String.valueOf(counter));
+            mAnimation.setDuration((ANIMATION_DURATION <= 500) ? 500 : ANIMATION_DURATION);
+            accelerateHandler.postDelayed(this, 1000);
+        }
+    };
 }

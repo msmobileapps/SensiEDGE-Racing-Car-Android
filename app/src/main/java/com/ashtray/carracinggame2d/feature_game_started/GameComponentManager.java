@@ -2,8 +2,8 @@ package com.ashtray.carracinggame2d.feature_game_started;
 
 import android.graphics.Canvas;
 import android.util.Log;
-import android.widget.ImageView;
 
+import com.ashtray.carracinggame2d.interfaces.CarDataListener;
 import com.ashtray.carracinggame2d.interfaces.OnCarPositionChanged;
 
 import java.util.ArrayList;
@@ -19,8 +19,10 @@ class GameComponentManager implements OnCarPositionChanged {
     private ArrayList<GameComponent> componentArrayList;
     private Car myCar;
     private Car enemyHitedCar;
+    private CarDataListener carDataListener;
 
-    GameComponentManager() {
+    GameComponentManager(CarDataListener carDataListener) {
+        this.carDataListener = carDataListener;
         componentArrayList = new ArrayList<>();
 
         componentArrayList.add(GC_POS_GAME_SCREEN, new ComponentGameScreen());
@@ -78,18 +80,20 @@ class GameComponentManager implements OnCarPositionChanged {
 
             if (enemyHitedCar != null && enemyHitedCar != enemyCar) {
                 if (isCarCrash(enemyCar)) {
-                    Log.d("IgorBoomTest", " Boom");
+                    if(carDataListener != null){
+                        carDataListener.carHited();
+                    }
+                    myCar.animateBoom();
                 }
             } else if (enemyHitedCar == null) {
                 if (isCarCrash(enemyCar)) {
-                    Log.d("IgorBoomTest", "First Time Boom");
+                    if(carDataListener != null){
+                        carDataListener.carHited();
+                    }
+                    myCar.animateBoom();
                 }
             }
-
-
         }
-
-
     }
 
 
@@ -98,10 +102,8 @@ class GameComponentManager implements OnCarPositionChanged {
             if (((myCar.getRect().y - myCar.carHeight) <= (enemyCar.getRect().y + enemyCar.carHeight)) || myCar.getRect().intersects(enemyCar.getRect())) {
                 enemyHitedCar = enemyCar;
                 return true;
-
             }
         }
-
         return false;
 
     }

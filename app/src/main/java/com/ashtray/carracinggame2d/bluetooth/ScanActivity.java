@@ -26,6 +26,8 @@
  ******************************************************************************/
 package com.ashtray.carracinggame2d.bluetooth;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -41,24 +43,22 @@ import com.st.BlueSTSDK.Manager;
 import com.st.BlueSTSDK.Node;
 import com.st.BlueSTSDK.Utils.NodeScanActivity;
 
+import java.io.File;
+
+import static com.ashtray.carracinggame2d.bluetooth.FeatureListActivity.NODE_FRAGMENT;
+import static com.ashtray.carracinggame2d.bluetooth.NodeContainerFragment.NODE_TAG;
+
 /**
  * This activity will show a list of device that are supported by the sdk
  */
 public class ScanActivity extends NodeScanActivity implements AbsListView.OnItemClickListener {
 
-    /**
-     * number of millisecond that we spend looking for a new node
-     */
+
     private final static int SCAN_TIME_MS = 10 * 1000; //10sec
-
-    /**
-     * adapter that will build the gui for each discovered node
-     */
     private NodeArrayAdapter mAdapter;
+    private ProgressDialog mConnectionWait;
 
-    /**
-     * listener that will change button gui when the discover stop
-     */
+
     private Manager.ManagerListener mUpdateDiscoverGui = new Manager.ManagerListener() {
 
         /**
@@ -82,13 +82,14 @@ public class ScanActivity extends NodeScanActivity implements AbsListView.OnItem
             runOnUiThread(() -> updateNodeList());
         }
     };
+    private NodeContainerFragment mNodeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
 
-        AbsListView listView =  findViewById(R.id.nodeListView);
+        AbsListView listView = findViewById(R.id.nodeListView);
         mAdapter = new NodeArrayAdapter(this);
         listView.setAdapter(mAdapter);
 
@@ -97,7 +98,10 @@ public class ScanActivity extends NodeScanActivity implements AbsListView.OnItem
 
         //add the already discovered nodes
         mAdapter.addAll(mManager.getNodes());
-        Log.e("barak",mManager.getNodes().size()+"");
+        mConnectionWait = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
+        mConnectionWait.setTitle(R.string.searchDialogConnTitle);
+        mConnectionWait.show();
+
     }
 
     /**
@@ -108,7 +112,9 @@ public class ScanActivity extends NodeScanActivity implements AbsListView.OnItem
         mAdapter.clear();
         mAdapter.addAll(mManager.getNodes());
     }
+
     private void updateNodeList() {
+        mConnectionWait.dismiss();
         mAdapter.clear();
         mAdapter.addAll(mManager.getNodes());
         mAdapter.notifyDataSetChanged();
@@ -150,6 +156,7 @@ public class ScanActivity extends NodeScanActivity implements AbsListView.OnItem
 
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -181,10 +188,21 @@ public class ScanActivity extends NodeScanActivity implements AbsListView.OnItem
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Node n = mAdapter.getItem(position);
-        if(n==null)
+        if (n == null)
             return;
-
-        Intent i = MainActivity.getStartIntent(this, n);
-        startActivity(i);
+        mNodeContainer = new NodeContainerFragment();
+        Bundle bundle = NodeContainerFragment.prepareArguments(n);
+        mNodeContainer.setArguments(bundle);
+        getFragmentManager().beginTransaction()
+                .add(mNodeContainer, NODE_FRAGMENT).commit();
     }
+
+
+    public void goNext(Node node) {
+        Intent i = MainActivity.getStartIntent(ScanActivity.this, node);
+        startActivity(i);
+        return;
+    }
+
+
 }

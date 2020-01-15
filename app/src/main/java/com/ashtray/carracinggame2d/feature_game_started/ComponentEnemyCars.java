@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class ComponentEnemyCars implements GameComponent {
 
-    private static final int maxSpeed = 10;
+    private static final int maxSpeed = 200;
     private int minDisBetweenTwoEnemyCar = Car.carHeight * 4;
     private ArrayList<Car> enemyCars;
     private int speed;
@@ -68,7 +68,7 @@ public class ComponentEnemyCars implements GameComponent {
             Car eCar = chooseARandomCar();
             enemyCars.add(eCar);
             minDisBetweenTwoEnemyCar = Math.max(minDisBetweenTwoEnemyCar - 5, Car.carHeight * 4);
-            if (minDisBetweenTwoEnemyCar == Car.carHeight * 2) {
+            if (minDisBetweenTwoEnemyCar >= Car.carHeight * 2) {
                 speed = Math.min(speed + 1, maxSpeed);
             }
 

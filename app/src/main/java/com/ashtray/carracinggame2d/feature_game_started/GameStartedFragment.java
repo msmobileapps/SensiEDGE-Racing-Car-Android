@@ -9,20 +9,31 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ashtray.carracinggame2d.entities.MyFragment;
+import com.ashtray.carracinggame2d.interfaces.CarDataListener;
 
 public class GameStartedFragment extends MyFragment {
 
-    public GameStartedFragment(MyFragmentCallBacks callBacks) {
+    private CarDataListener carDataListener;
+    private GameBoardView gameBoardView;
+
+
+    public GameStartedFragment(MyFragmentCallBacks callBacks, CarDataListener carDataListener) {
         super(callBacks);
+        this.carDataListener = carDataListener;
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return new GameBoardView(getContext());
+        gameBoardView = new GameBoardView(getContext(), carDataListener);
+        return gameBoardView;
     }
 
     @Override
     public boolean handleBackButtonPressed() {
         return false;
+    }
+
+    public GameBoardView getGameBoardView(){
+        return gameBoardView;
     }
 }

@@ -1,15 +1,13 @@
 package com.ashtray.carracinggame2d.feature_game_started;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.view.View;
-import android.view.animation.AccelerateInterpolator;
+import android.os.Handler;
+
 
 import com.ashtray.carracinggame2d.CarGame2DApplication;
+
 
 public class Car {
 
@@ -22,16 +20,23 @@ public class Car {
     private int carLean;
     private CRect rect;
     private int[] sourceLocation;
+    private Canvas canvas;
+    private Paint paint;
+
 
     Car(int xPosition, int yPosition, int carLean, Bitmap carImage) {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.carLean = carLean;
         this.carImage = carImage;
+
+
     }
 
     void drawCar(Canvas canvas) {
-        canvas.drawBitmap(carImage, xPosition, yPosition, new Paint());
+        this.canvas = canvas;
+        paint = new Paint();
+        canvas.drawBitmap(carImage, xPosition, yPosition, paint);
 
     }
 
@@ -71,7 +76,26 @@ public class Car {
     }
 
     public void animateBoom() {
-        carImage = CarGame2DApplication.getInstance().getSelectedCarBoom();
+        final Handler handler = new Handler();
+        final int[] count = {0};
+
+        final Runnable runnable = new Runnable() {
+            public void run() {
+                // need to do tasks on the UI thread
+                if ((count[0] % 2) == 0) {
+                    carImage = CarGame2DApplication.getInstance().getSelectedCarBoom();
+                } else {
+                    carImage = CarGame2DApplication.getInstance().getSelectedCarImage();
+                }
+                if (count[0]++ < 5) {
+                    handler.postDelayed(this, 500);
+                }
+            }
+        };
+
+        handler.post(runnable);
+
+
     }
 
 
