@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
     private static final String DEBUG_TAG = "[MainActivity]";
     private static final float DELTA = -100f;
     private static int MAX_SAMPLE_SIZE = 7;
+    public static boolean enableDeviceAcc = true;
     private int end = 1;
     private int start = 0;
     private final static String NODE_TAG = FeatureListActivity.class.getCanonicalName() + "" +
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
     @Override
     protected void onPause() {
         super.onPause();
-        if (mSensorManager != null){
+        if (enableDeviceAcc && mSensorManager != null){
             mSensorManager.unregisterListener(mSensorListener);
         }
 
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
                 LazySingleton.Companion.getINSTANCE().position = averageList((Short) sample.data[0]);
             });
             mNode.enableNotification(feature);
-        }else {
+        }else if (enableDeviceAcc){
             mSensorManager = (SensorManager) CarGame2DApplication.getInstance().getSystemService(Context.SENSOR_SERVICE);
             mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
         }
@@ -282,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
 
     private final SensorEventListener mSensorListener = new SensorEventListener() {
         public void onSensorChanged(SensorEvent se) {
-            LazySingleton.Companion.getINSTANCE().position = averageList((short) (se.values[0]*130));
+            LazySingleton.Companion.getINSTANCE().position = averageList((short) (se.values[0]*140));
         }
 
         @Override

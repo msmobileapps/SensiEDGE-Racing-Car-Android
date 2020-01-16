@@ -41,6 +41,7 @@ import com.st.BlueSTSDK.Manager;
 import com.st.BlueSTSDK.Node;
 import com.st.BlueSTSDK.Utils.NodeScanActivity;
 
+import static com.msapps.carracing.MainActivity.enableDeviceAcc;
 import static com.msapps.carracing.bluetooth.FeatureListActivity.NODE_FRAGMENT;
 
 /**
@@ -83,13 +84,13 @@ public class ScanActivity extends NodeScanActivity implements AbsListView.OnItem
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
-        findViewById(R.id.textView2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        if(enableDeviceAcc){
+            findViewById(R.id.textView2).setOnClickListener(view -> {
                 Intent i = new Intent(ScanActivity.this, MainActivity.class);
                 startActivity(i);
-            }
-        });
+            });
+        }
+
         AbsListView listView = findViewById(R.id.nodeListView);
         mAdapter = new NodeArrayAdapter(this);
         listView.setAdapter(mAdapter);
