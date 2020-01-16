@@ -8,16 +8,14 @@ android {
     buildToolsVersion "29.0.0"
 
     defaultConfig {
-        minSdkVersion 18
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         consumerProguardFiles 'proguard-rules.pro'
-
         ndk {
             moduleName "opusUser"
         }
-
         sourceSets.main {
             jniLibs.srcDir 'src/main/jniLibs'
             jni.srcDirs = [] //disable automatic ndk-build call
@@ -44,7 +42,7 @@ dependencies {
 
     implementation group: 'com.google.android.material', name: 'material', version: "$rootProject.androidx_materialVersion"
     implementation group: 'androidx.appcompat', name: 'appcompat', version: "$rootProject.androidx_appCompatVersion"
-    implementation group: 'androidx.annotation', name:'annotation',version: "$rootProject.androidx_annotationVersion"
+    implementation group: 'androidx.annotation', name: 'annotation', version: "$rootProject.androidx_annotationVersion"
 
 
     testImplementation "junit:junit:$rootProject.junitVersion"

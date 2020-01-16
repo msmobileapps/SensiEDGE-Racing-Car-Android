@@ -26,10 +26,16 @@
  ******************************************************************************/
 package com.st.BlueSTSDK.Utils;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -63,15 +69,18 @@ public class NodeScanActivity extends AppCompatActivity {
     private BlePermissionHelper.BlePermissionAcquiredCallback mCallback = new BlePermissionHelper.BlePermissionAcquiredCallback() {
         @Override
         public void onBlePermissionAcquired() {
-            mManager.startDiscovery(mLastTimeOut,buildAdvertiseFilter());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+            }
+            mManager.startDiscovery(mLastTimeOut, buildAdvertiseFilter());
             mLastTimeOut=0;
         }
 
         @Override
         public void onBlePermissionDenied() {
-            final View viewRoot = ((ViewGroup) NodeScanActivity.this
-                    .findViewById(android.R.id.content)).getChildAt(0);
-            Snackbar.make(viewRoot,  R.string.LocationNotGranted, Snackbar.LENGTH_SHORT).show();
+            finish();
         }
     };
 
@@ -84,6 +93,7 @@ public class NodeScanActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mManager = Manager.getSharedInstance();
+
 
         mPermissionHelper = new BlePermissionHelper(this);
     }//onCreate
@@ -127,26 +137,23 @@ public class NodeScanActivity extends AppCompatActivity {
         mManager.stopDiscovery();
     }
 
-    /**
-     * return after ask to the user to enable the bluetooth
-     *
-     * @param requestCode request code id
-     * @param resultCode  request result, if is {@code Activity.RESULT_CANCELED} the activity is
-     *                    closed since we need the bluetooth
-     * @param data        request data
-     */
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(mPermissionHelper.onActivityResult(requestCode,resultCode,data)==null) {
+        if(requestCode==55) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                finish();
+            }
+        } if(mPermissionHelper.onActivityResult(requestCode,resultCode,data)==null) {
             super.onActivityResult(requestCode, resultCode, data);
         }
-    }//onActivityResult
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         mPermissionHelper.onRequestPermissionsResult(requestCode,permissions,grantResults,mCallback);
-    }//onRequestPermissionsResult
+    }
 }
 

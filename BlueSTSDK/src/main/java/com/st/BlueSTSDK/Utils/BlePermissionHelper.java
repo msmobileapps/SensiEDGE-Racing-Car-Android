@@ -43,9 +43,11 @@ import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import androidx.annotation.NonNull;
@@ -60,6 +62,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.st.BlueSTSDK.R;
+
+import static android.content.Context.MODE_PRIVATE;
 
 //todo: use ContextComp.getSystemService when support library can be upgraded to 28
 public class BlePermissionHelper{
@@ -154,13 +158,14 @@ public class BlePermissionHelper{
      * @return true if the location service is enabled, false if we ask to the user to do it
      */
     private boolean enableLocationService(){
+        Resources res = mCtx.getResources();
         LocationManager lm =  (LocationManager) mCtx.getSystemService(Context.LOCATION_SERVICE);
         if(lm == null)
             throw new IllegalStateException("Location manager adapter is needed by this app!");
         boolean providerEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER) |
                 lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
         if(!providerEnabled) {
-            Resources res = mCtx.getResources();
+
             // notify user
             final AlertDialog.Builder dialog = new AlertDialog.Builder(mCtx);
             dialog.setMessage(res.getString(R.string.EnablePositionService));
@@ -195,28 +200,45 @@ public class BlePermissionHelper{
         if (ContextCompat.checkSelfPermission(mCtx,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(),
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(),
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-                final AlertDialog.Builder dialog = new AlertDialog.Builder(mCtx);
-                dialog.setMessage(mCtx.getString(R.string.LocationCoarseRationale));
-                dialog.setPositiveButton(android.R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                                requestPermissions(
-                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                        REQUEST_LOCATION_ACCESS);
-                            }
-                        });
-                dialog.show();
+                SharedPreferences prefs = mActivity.getSharedPreferences("com.msapps.carracing", MODE_PRIVATE);
+
+                if (!prefs.getBoolean("firstask", true)) {
+                    final AlertDialog.Builder dialog = new AlertDialog.Builder(mCtx);
+                    dialog.setMessage(mActivity.getString(R.string.EnablePositionService));
+                    dialog.setPositiveButton(mActivity.getString(android.R.string.ok),
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                    Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                    intent.setData(Uri.parse("package:" + mActivity.getPackageName()));
+                                    mActivity.startActivityForResult(intent,55);
+                                }
+                            });
+                    dialog.show();
+                }
+                else {
+                    prefs.edit().putBoolean("firstask", false).apply();
+                    final AlertDialog.Builder dialog = new AlertDialog.Builder(mCtx);
+                    dialog.setMessage(mCtx.getString(R.string.LocationCoarseRationale));
+                    dialog.setPositiveButton(android.R.string.ok,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                    requestPermissions(
+                                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                            REQUEST_LOCATION_ACCESS);
+                                }
+                            });
+                    dialog.show();
+                }
+
             } else {
-                // No explanation needed, we can request the permission.
-                requestPermissions(
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        REQUEST_LOCATION_ACCESS);
-            }//if-else
+
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_ACCESS);
+
+            }
             return false;
         }else
             return  true;
