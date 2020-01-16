@@ -19,6 +19,7 @@
     <string name="title_activity_demo">Feature list</string>
 
     <string name="yor_score">Your score:\u0020</string>
+    <string name="your_score">Your score: %1$d</string>
     <string name="openRegister">Register</string>
     <string name="openDebugConsole">Debug Console</string>
     <string name="TapTo">Tap to scan</string>

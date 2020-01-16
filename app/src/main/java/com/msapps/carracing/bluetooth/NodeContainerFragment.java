@@ -44,20 +44,22 @@ public class NodeContainerFragment extends Fragment {
         @Override
         public void onStateChange(final Node node, Node.State newState, Node.State prevState) {
             final Activity activity = NodeContainerFragment.this.getActivity();
-            if ((newState == Node.State.Connected) && activity != null) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mConnectionWait.dismiss();
-                        mConnectionWait  = null;
-                        if (activity instanceof ScanActivity){
-                            ((ScanActivity)activity).goNext(node);
+            if (activity != null) {
+                if (newState == Node.State.Connected){
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mConnectionWait.dismiss();
+                            if (activity instanceof ScanActivity) {
+                                ((ScanActivity) activity).goNext(node);
+                            }
                         }
-                    }
-                });
-            } else {
-                mConnectionWait.show();
-                mNode.connect(getActivity());
+                    });
+                }
+                else if (mConnectionWait != null)  {
+                    mConnectionWait.show();
+                    mNode.connect(getActivity());
+                }
             }
         }
     };

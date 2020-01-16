@@ -12,8 +12,8 @@ android {
         applicationId "com.msapps.carracing"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 5
-        versionName "1.0"
+        versionCode 6
+        versionName "1.1"
         ndk.abiFilters 'arm64-v8a','armeabi-v7a'
     }
 

@@ -83,7 +83,13 @@ public class ScanActivity extends NodeScanActivity implements AbsListView.OnItem
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
-
+        findViewById(R.id.textView2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(ScanActivity.this, MainActivity.class);
+                startActivity(i);
+            }
+        });
         AbsListView listView = findViewById(R.id.nodeListView);
         mAdapter = new NodeArrayAdapter(this);
         listView.setAdapter(mAdapter);

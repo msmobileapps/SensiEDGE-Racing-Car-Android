@@ -10,6 +10,10 @@ import android.animation.ObjectAnimator;
 
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -39,7 +43,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements MyFragment.MyFragmentCallBacks, CarDataListener {
     private static final String DEBUG_TAG = "[MainActivity]";
     private static final float DELTA = -100f;
-    private static final int MAX_SAMPLE_SIZE = 7;
+    private static int MAX_SAMPLE_SIZE = 7;
     private int end = 1;
     private int start = 0;
     private final static String NODE_TAG = FeatureListActivity.class.getCanonicalName() + "" +
@@ -62,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
     private LinearLayout cars_container;
     private Handler accelerateHandler;
     private int counter;
+    private SensorManager mSensorManager;
 
     public static Intent getStartIntent(Context c, @NonNull Node node) {
         Intent i = new Intent(c, MainActivity.class);
@@ -95,12 +100,16 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
         mImageView = findViewById(R.id.road);
         animateRoad();
         mNode = Manager.getSharedInstance().getNodeWithTag(getIntent().getStringExtra(NODE_TAG));
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        LogHandler.d(DEBUG_TAG, "on pause called");
+        if (mSensorManager != null){
+            mSensorManager.unregisterListener(mSensorListener);
+        }
+
     }
 
     private void addCars() {
@@ -136,6 +145,9 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
                 LazySingleton.Companion.getINSTANCE().position = averageList((Short) sample.data[0]);
             });
             mNode.enableNotification(feature);
+        }else {
+            mSensorManager = (SensorManager) CarGame2DApplication.getInstance().getSystemService(Context.SENSOR_SERVICE);
+            mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
         }
     }
 
@@ -231,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
     private void showGameOverDialog() {
         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
         alertDialog.setTitle("Game Over");
-        alertDialog.setMessage("Your score is " + scoreTv.getText());
+        alertDialog.setMessage( scoreTv.getText());
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "play again",
                 (dialog, which) -> {
                     dialog.dismiss();
@@ -262,9 +274,19 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
         public void run() {
             ANIMATION_DURATION -= counter;
             counter++;
-            scoreTv.setText(String.valueOf(counter));
+            scoreTv.setText(String.format(getString(R.string.your_score),counter));
             mAnimation.setDuration((ANIMATION_DURATION <= 500) ? 500 : ANIMATION_DURATION);
             accelerateHandler.postDelayed(this, 1000);
+        }
+    };
+
+    private final SensorEventListener mSensorListener = new SensorEventListener() {
+        public void onSensorChanged(SensorEvent se) {
+            LazySingleton.Companion.getINSTANCE().position = averageList((short) (se.values[0]*130));
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
         }
     };
 }

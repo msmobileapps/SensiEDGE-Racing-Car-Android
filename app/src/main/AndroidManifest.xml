@@ -15,21 +15,23 @@
         android:roundIcon="@drawable/icon_check"
         android:supportsRtl="true"
         android:theme="@style/MyTheme"
-        android:versionCode="1"
-        android:versionName="1.0"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".bluetooth.ScanActivity"></activity>
-        <activity android:name=".SplashActivity">
+        <activity android:name=".bluetooth.ScanActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".SplashActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".bluetooth.FeatureListActivity"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:parentActivityName=".bluetooth.ScanActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

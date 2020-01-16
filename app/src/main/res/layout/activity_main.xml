@@ -65,12 +65,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/yor_score"
-                android:textColor="@color/game_info_white_text"
-                android:textSize="16sp" />
+
 
             <TextView
                 android:id="@+id/score_tv"

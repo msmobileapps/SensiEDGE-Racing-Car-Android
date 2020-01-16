@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.msapps.carracing.CarGame2DApplication;
 import com.msapps.carracing.interfaces.CarDataListener;
+import com.st.BlueSTSDK.Manager;
 
 public class GameBoardView extends View {
     private static final String DEBUG_TAG = "GameBoardView";
@@ -30,23 +31,12 @@ public class GameBoardView extends View {
         super(context);
         gameComponentManager = new GameComponentManager(listener);
         handler = new Handler();
-        mSensorManager = (SensorManager) CarGame2DApplication.getInstance().getSystemService(Context.SENSOR_SERVICE);
-        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+
 
 
 
     }
 
-    private final SensorEventListener mSensorListener = new SensorEventListener() {
-        public void onSensorChanged(SensorEvent se) {
-            gameComponentManager.moveCarTo(se.values[0]);
-
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        }
-    };
 
     @Override
     protected void onDraw(Canvas canvas) {
