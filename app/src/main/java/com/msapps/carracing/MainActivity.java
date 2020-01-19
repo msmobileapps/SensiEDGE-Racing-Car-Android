@@ -254,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
                 (dialog, which) -> {
                     finish();
                 });
+        alertDialog.setCancelable(false);
         alertDialog.show();
     }
 
@@ -283,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.MyFrag
 
     private final SensorEventListener mSensorListener = new SensorEventListener() {
         public void onSensorChanged(SensorEvent se) {
-            LazySingleton.Companion.getINSTANCE().position = averageList((short) (se.values[0]*140));
+            LazySingleton.Companion.getINSTANCE().position = averageList((short) (se.values[0]*170));
         }
 
         @Override
